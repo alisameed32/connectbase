@@ -82,6 +82,24 @@ public class AuthService {
         userRepo.save(user);
     }
 
+    public void changePassword(String email, String oldPassword, String newPassword, String verificationCode) {
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new RuntimeException("Incorrect old password");
+        }
+
+        if (user.getVerificationCode() == null || !user.getVerificationCode().equals(verificationCode) ||
+                user.getVerificationCodeExpiry().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Invalid or expired verification code");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setVerificationCode(null);
+        userRepo.save(user);
+    }
+
     private void sendEmail(String to, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);

@@ -58,6 +58,12 @@ public class AuthController {
         return ResponseEntity.ok(new ApiResponse<>(200, "Verification code sent to email", null));
     }
 
+    @PostMapping("/send-verification-code")
+    public ResponseEntity<ApiResponse<String>> sendVerificationCode(java.security.Principal principal) {
+        authService.generateResetCode(principal.getName());
+        return ResponseEntity.ok(new ApiResponse<>(200, "Verification code sent to email", null));
+    }
+
     @PostMapping("/reset-password")
     public ResponseEntity<ApiResponse<String>> resetPassword(
             @RequestParam("email") String email,
@@ -66,6 +72,20 @@ public class AuthController {
 
         authService.resetPassword(email, code, newPassword);
         return ResponseEntity.ok(new ApiResponse<>(200, "Password reset successfully", null));
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<ApiResponse<String>> changePassword(
+            @RequestBody com.connectbase.backend.dto.ChangePasswordRequest request,
+            java.security.Principal principal) {
+        
+        authService.changePassword(
+            principal.getName(), 
+            request.getOldPassword(), 
+            request.getNewPassword(), 
+            request.getVerificationCode()
+        );
+        return ResponseEntity.ok(new ApiResponse<>(200, "Password changed successfully", null));
     }
 
     @PostMapping("/logout")
