@@ -18,7 +18,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleGlobalException(Exception ex) {
         log.error("❌ Unexpected Error: ", ex); // Logs the full stack trace for YOU
         return new ResponseEntity<>(
-                new ApiResponse<>("An internal error occurred. Please contact support.", false),
+                new ApiResponse<>(500, "An internal error occurred. Please contact support.", false),
                 HttpStatus.INTERNAL_SERVER_ERROR
         );
     }
@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleRuntimeException(RuntimeException ex) {
         log.warn("⚠️ Application Warning: {}", ex.getMessage());
         return new ResponseEntity<>(
-                new ApiResponse<>(ex.getMessage(), false),
+                new ApiResponse<>(400, ex.getMessage(), false),
                 HttpStatus.BAD_REQUEST
         );
     }
