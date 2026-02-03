@@ -2,9 +2,13 @@ package com.connectbase.backend.controller;
 
 import com.connectbase.backend.dto.ApiResponse;
 import com.connectbase.backend.model.Contact;
+import com.connectbase.backend.model.User;
+import com.connectbase.backend.repo.UserRepo;
 import com.connectbase.backend.service.ContactService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.domain.Page;
@@ -20,19 +24,31 @@ public class ContactController {
     @Autowired
     private ContactService contactService;
 
+    @Autowired
+    private UserRepo userRepo;
+
+    private User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        return userRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
     // Show all contacts with pagination
     @GetMapping("/contacts")
     public ResponseEntity<ApiResponse<Page<Contact>>> getContacts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Page<Contact> contacts = contactService.getAllContacts(page, size);
+        User user = getAuthenticatedUser();
+        Page<Contact> contacts = contactService.getAllContacts(user, page, size);
         ApiResponse<Page<Contact>> response = new ApiResponse<>(200, "Contacts retrieved successfully", contacts);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/contact/{id}")
     public ResponseEntity<ApiResponse<Contact>> getContactById(@PathVariable long id){
-        Contact contact = contactService.getContactById(id);
+        User user = getAuthenticatedUser();
+        Contact contact = contactService.getContactById(id, user);
         ApiResponse<Contact> response = new ApiResponse<>(200, "Contact retrieved successfully", contact);
         return ResponseEntity.ok(response);
     }
@@ -46,6 +62,7 @@ public class ContactController {
             @RequestParam("title") String title,
             @RequestParam(value = "image", required = false) MultipartFile image) {
         
+        User user = getAuthenticatedUser();
         Contact contact = new Contact();
         contact.setFirstName(firstName);
         contact.setLastName(lastName);
@@ -53,7 +70,7 @@ public class ContactController {
         contact.setPhone(phone);
         contact.setTitle(title);
 
-        Contact createdContact = contactService.createContact(contact, image);
+        Contact createdContact = contactService.createContact(user, contact, image);
         return ResponseEntity.created(URI.create("/api/contact/" + createdContact.getId()))
                 .body(new ApiResponse<>(201, "Contact created successfully", createdContact));
     }
@@ -68,6 +85,7 @@ public class ContactController {
             @RequestParam(value = "title", required = false) String title,
             @RequestParam(value = "image", required = false) MultipartFile image) {
 
+        User user = getAuthenticatedUser();
         Contact contactDetails = new Contact();
         contactDetails.setFirstName(firstName);
         contactDetails.setLastName(lastName);
@@ -75,13 +93,14 @@ public class ContactController {
         contactDetails.setPhone(phone);
         contactDetails.setTitle(title);
 
-        Contact updatedContact = contactService.updateContact(id, contactDetails, image);
+        Contact updatedContact = contactService.updateContact(id, user, contactDetails, image);
         return ResponseEntity.ok(new ApiResponse<>(200, "Contact updated successfully", updatedContact));
     }
 
     @DeleteMapping("/delete-contact/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteContact(@PathVariable long id) {
-        contactService.deleteContact(id);
+        User user = getAuthenticatedUser();
+        contactService.deleteContact(id, user);
         return ResponseEntity.ok(new ApiResponse<>(200, "Contact deleted successfully", true)); 
     }
 
@@ -90,7 +109,8 @@ public class ContactController {
             @RequestParam("query") String query,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Page<Contact> contacts = contactService.searchContacts(query, page, size);
+        User user = getAuthenticatedUser();
+        Page<Contact> contacts = contactService.searchContacts(user, query, page, size);
         ApiResponse<Page<Contact>> response = new ApiResponse<>(200, "Search completed successfully", contacts);
         return ResponseEntity.ok(response);
     }
