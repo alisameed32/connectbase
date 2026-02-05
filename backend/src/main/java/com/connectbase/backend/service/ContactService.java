@@ -9,6 +9,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.Optional;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ContactService {
@@ -81,5 +84,81 @@ public class ContactService {
         contactRepo.delete(existingContact);
     }
 
+    public void exportContacts(User user, PrintWriter writer) {
+        List<Contact> contacts = contactRepo.findByUser(user);
+        writer.write("First Name,Last Name,Email,Phone,Title,Image URL\n");
+        for (Contact contact : contacts) {
+            writer.write(escapeSpecialCharacters(contact.getFirstName()) + "," +
+                    escapeSpecialCharacters(contact.getLastName()) + "," +
+                    escapeSpecialCharacters(contact.getEmail()) + "," +
+                    escapeSpecialCharacters(contact.getPhone()) + "," +
+                    escapeSpecialCharacters(contact.getTitle()) + "," +
+                    escapeSpecialCharacters(contact.getImage()) + "\n");
+        }
+    }
+
+    private String escapeSpecialCharacters(String data) {
+        if (data == null) {
+            return "";
+        }
+        String escapedData = data.replaceAll("\\R", " ");
+        if (escapedData.contains(",") || escapedData.contains("\"") || escapedData.contains("'")) {
+            escapedData = escapedData.replace("\"", "\"\"");
+            escapedData = "\"" + escapedData + "\"";
+        }
+        return escapedData;
+    }
+
+    public void importContacts(User user, MultipartFile file) throws IOException {
+        long lineCount = 0;
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            String line;
+            boolean firstLine = true;
+            List<Contact> contacts = new ArrayList<>();
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;
+                
+                lineCount++;
+                if (firstLine) {
+                    firstLine = false; 
+                    continue;
+                }
+                // Regex to split by comma but ignore commas inside quotes
+                String[] data = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+                
+                if (data.length < 5) {
+                     throw new IllegalArgumentException("Invalid CSV format. Row must contain at least 5 columns (First Name, Last Name, Email, Phone, Title).");
+                }
+
+                Contact contact = new Contact();
+                contact.setUser(user);
+                contact.setFirstName(cleanup(data[0]));
+                contact.setLastName(cleanup(data[1]));
+                contact.setEmail(cleanup(data[2]));
+                contact.setPhone(cleanup(data[3]));
+                contact.setTitle(cleanup(data[4]));
+                if (data.length > 5 && !data[5].isEmpty()) {
+                        contact.setImage(cleanup(data[5]));
+                }
+                contacts.add(contact);
+            }
+
+            if (contacts.isEmpty() && lineCount <= 1) {
+                 throw new IllegalArgumentException("CSV file is empty or contains only headers.");
+            }
+
+            contactRepo.saveAll(contacts);
+        }
+    }
+
+    private String cleanup(String data) {
+        if (data == null) return "";
+        String cleaned = data.trim();
+        if (cleaned.startsWith("\"") && cleaned.endsWith("\"")) {
+            cleaned = cleaned.substring(1, cleaned.length() - 1);
+            cleaned = cleaned.replace("\"\"", "\"");
+        }
+        return cleaned;
+    }
    
 }

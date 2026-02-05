@@ -12,6 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.domain.Page;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 
 import java.net.URI;
@@ -115,4 +117,42 @@ public class ContactController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/contacts/export")
+    public void exportContacts(HttpServletResponse response) throws IOException {
+        User user = getAuthenticatedUser();
+        response.setContentType("text/csv");
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("Content-Disposition", "attachment; filename=\"contacts.csv\"");
+        contactService.exportContacts(user, response.getWriter());
+    }
+
+    @PostMapping("/contacts/import")
+    public ResponseEntity<ApiResponse<String>> importContacts(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+             return ResponseEntity.badRequest().body(new ApiResponse<>(400, "File is empty", null));
+        }
+
+        if (!isCsvFile(file)) {
+             return ResponseEntity.badRequest().body(new ApiResponse<>(400, "Invalid file type. Please upload a .csv file.", null));
+        }
+
+        try {
+            User user = getAuthenticatedUser();
+            contactService.importContacts(user, file);
+            return ResponseEntity.ok(new ApiResponse<>(200, "Contacts imported successfully", null));
+        } catch (IllegalArgumentException e) {
+             return ResponseEntity.badRequest().body(new ApiResponse<>(400, e.getMessage(), null));
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body(new ApiResponse<>(500, "Failed to import contacts: " + e.getMessage(), null));
+        }
+    }
+
+    private boolean isCsvFile(MultipartFile file) {
+        String contentType = file.getContentType();
+        if (contentType != null && (contentType.equals("text/csv") || contentType.equals("application/vnd.ms-excel"))) {
+            return true;
+        }
+        String filename = file.getOriginalFilename();
+        return filename != null && filename.toLowerCase().endsWith(".csv");
+    }
 }

@@ -22,4 +22,6 @@ public interface ContactRepo extends JpaRepository<Contact, Long> {
     Page<Contact> searchContacts(@Param("user") User user, @Param("keyword") String keyword, Pageable pageable);
 
     Page<Contact> findByUser(User user, Pageable pageable);
+
+    java.util.List<Contact> findByUser(User user);
 }
