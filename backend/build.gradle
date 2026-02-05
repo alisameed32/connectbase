@@ -2,6 +2,8 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '4.0.2'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id "org.sonarqube" version "4.4.1.3373"
+	id "jacoco"
 }
 
 group = 'com.connectbase'
@@ -48,3 +50,30 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+sonar {
+	properties {
+		property "sonar.projectKey", "connectbase-backend"
+		property "sonar.projectName", "ConnectBase Backend"
+		property "sonar.host.url", "http://localhost:9000"
+		property "sonar.token", "YOUR_GENERATED_TOKEN_HERE" // Optional: can be passed via command line
+
+		// Configuration for Java
+		property "sonar.language", "java"
+		property "sonar.java.binaries", "build/classes"
+
+		// If you have JavaScript files in a specific folder (e.g., frontend or src/main/resources/static)
+		// property "sonar.sources", "src/main/java, src/main/resources/static/js"
+
+		// Code Coverage
+		property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
+	}
+}
+
+jacocoTestReport {
+	reports {
+		xml.required = true
+	}
+}
+// Ensure JaCoCo runs after tests
+test.finalizedBy jacocoTestReport
