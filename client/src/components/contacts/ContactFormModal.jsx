@@ -22,7 +22,7 @@ const InputField = ({ label, name, type = "text", icon: Icon, placeholder, requi
     </div>
 );
 
-const ContactFormModal = ({ isOpen, onClose, onSubmit, initialData = null, loading }) => {
+const ContactFormModal = ({ isOpen, onClose, onSubmit, onImageUpdate, initialData = null, loading }) => {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -58,13 +58,40 @@ const ContactFormModal = ({ isOpen, onClose, onSubmit, initialData = null, loadi
         }
     }, [initialData, isOpen]);
 
-    const handleChange = (e) => {
+    const [imageUploading, setImageUploading] = useState(false);
+
+    const handleChange = async (e) => {
         const { name, value, files } = e.target;
         if (name === 'image') {
             const file = files[0];
             if (file) {
-                setFormData(prev => ({ ...prev, image: file }));
-                setPreview(URL.createObjectURL(file));
+                // If in Edit Mode (initialData exists) and onImageUpdate is provided
+                if (initialData && onImageUpdate) {
+                    const imageFormData = new FormData();
+                    imageFormData.append('image', file);
+                    
+                    try {
+                        setImageUploading(true);
+                        // Optimistic preview
+                        setPreview(URL.createObjectURL(file));
+                        
+                        await onImageUpdate(imageFormData);
+                        
+                        // We do NOT update 'formData.image' here to avoid re-sending it on 'onSubmit'
+                        // and double-uploading. 
+                        setFormData(prev => ({ ...prev, image: null })); 
+                    } catch (err) {
+                        console.error("Image upload failed", err);
+                        // Revert preview on error? 
+                        setPreview(initialData.image || null);
+                    } finally {
+                        setImageUploading(false);
+                    }
+                } else {
+                    // Create Mode or no separate handler: Standard behavior
+                    setFormData(prev => ({ ...prev, image: file }));
+                    setPreview(URL.createObjectURL(file));
+                }
             }
         } else {
             setFormData(prev => ({ ...prev, [name]: value }));
@@ -122,7 +149,12 @@ const ContactFormModal = ({ isOpen, onClose, onSubmit, initialData = null, loadi
                         {/* Image Upload - Centered */}
                         <div className="flex flex-col items-center -mt-12 mb-4 relative z-20">
                             <div className="relative group cursor-pointer">
-                                <div className={`w-24 h-24 rounded-full overflow-hidden border-4 ${preview ? 'border-purple-500' : 'border-gray-100'} shadow-md transition-all`}>
+                                <div className={`relative w-24 h-24 rounded-full overflow-hidden border-4 ${preview ? 'border-purple-500' : 'border-gray-100'} shadow-md transition-all`}>
+                                    {imageUploading && (
+                                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
+                                            <Loader2 className="w-8 h-8 text-white animate-spin" />
+                                        </div>
+                                    )}
                                     {preview ? (
                                         <img src={preview} alt="Preview" className="w-full h-full object-cover" />
                                     ) : (

@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Search, Trash2, Edit2, ChevronLeft, ChevronRight, MoreVertical, LogOut, FileDown, Upload, Eye } from 'lucide-react';
+import { Plus, Search, Trash2, Edit2, ChevronLeft, ChevronRight, MoreVertical, LogOut, FileDown, Upload, Eye, User } from 'lucide-react';
 import ContactFormModal from '../components/contacts/ContactFormModal';
 import DeleteContactModal from '../components/contacts/DeleteContactModal';
 import ViewContactModal from '../components/contacts/ViewContactModal';
 import Toast from '../components/ui/Toast';
 
 const ContactsPage = () => {
+    const navigate = useNavigate();
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(0);
@@ -22,6 +24,7 @@ const ContactsPage = () => {
     const [isViewOpen, setIsViewOpen] = useState(false);
     const [selectedContact, setSelectedContact] = useState(null);
     const [toast, setToast] = useState({ message: '', type: 'success' });
+    const fileInputRef = React.useRef(null);
 
     // Fetch Contacts
     const fetchContacts = async (page = 0, query = '') => {
@@ -102,6 +105,20 @@ const ContactsPage = () => {
         }
     };
 
+    const handleImageUpdate = async (formData) => {
+        if (!selectedContact) return;
+        try {
+             await api.put(`/api/update-contact/${selectedContact.id}`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            showToast('Profile photo updated', 'success');
+            fetchContacts(currentPage, searchQuery);
+        } catch (error) {
+            console.error(error);
+            showToast('Failed to update photo', 'error');
+        }
+    };
+
     const handleDelete = async () => {
         if (!selectedContact) return;
         try {
@@ -130,13 +147,41 @@ const ContactsPage = () => {
             showToast('Failed to export contacts', 'error');
         }
     };
+
+    const handleImportClick = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    };
+
+    const handleImportFileChange = async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            await api.post('/api/contacts/import', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            showToast('Contacts imported successfully', 'success');
+            fetchContacts(0, searchQuery);
+        } catch (error) {
+            console.error(error);
+            showToast(error.response?.data?.message || 'Failed to import contacts', 'error');
+        } finally {
+            event.target.value = '';
+        }
+    };
     
     const handleLogout = async () => {
         try {
             await api.post('/auth/logout');
-            window.location.href = '/auth';
+            navigate('/auth');
         } catch (err) {
             console.error(err);
+            navigate('/auth');
         }
     };
 
@@ -162,7 +207,13 @@ const ContactsPage = () => {
                         <LogOut className="w-4 h-4" />
                         Logout
                     </button>
-                    <div className="w-8 h-8 rounded-full bg-gray-200 border border-gray-300"></div> {/* User Avatar Placeholder */}
+                    <div 
+                        onClick={() => navigate('/profile')}
+                        className="w-8 h-8 rounded-full bg-gray-200 border border-gray-300 cursor-pointer hover:ring-2 hover:ring-indigo-500 transition-all overflow-hidden relative"
+                        title="View Profile"
+                    >
+                        <User className="w-full h-full p-1 text-gray-500" />
+                    </div>
                 </div>
             </nav>
 
@@ -201,7 +252,15 @@ const ContactsPage = () => {
                     </div>
                     
                     <div className="flex gap-3">
+                        <input 
+                            type="file" 
+                            ref={fileInputRef} 
+                            onChange={handleImportFileChange} 
+                            accept=".csv" 
+                            className="hidden" 
+                        />
                         <button 
+                            onClick={handleImportClick}
                             className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm"
                         >
                              <Upload className="w-4 h-4 text-gray-500" />
@@ -348,6 +407,7 @@ const ContactsPage = () => {
                 isOpen={isEditOpen} 
                 onClose={() => setIsEditOpen(false)} 
                 onSubmit={handleUpdate}
+                onImageUpdate={handleImageUpdate}
                 initialData={selectedContact}
                 loading={loading}
             />

@@ -12,9 +12,9 @@ const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
-      // Handle unauthorized access (e.g., redirect to login)
-      // window.location.href = '/auth';
+    if (error.response && error.response.status === 403) {
+      // Token invalid or expired - redirect to login
+      window.location.href = '/auth';
     }
     return Promise.reject(error);
   }

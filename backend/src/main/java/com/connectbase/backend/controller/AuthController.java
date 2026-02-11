@@ -73,6 +73,12 @@ public class AuthController {
         return ResponseEntity.ok(new ApiResponse<>(200, "Password reset successfully", null));
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<User>> getCurrentUser(java.security.Principal principal) {
+        User user = authService.getUserProfile(principal.getName());
+        return ResponseEntity.ok(new ApiResponse<>(200, "User profile retrieved", user));
+    }
+
     @PostMapping("/change-password")
     public ResponseEntity<ApiResponse<String>> changePassword(
             @RequestBody com.connectbase.backend.dto.ChangePasswordRequest request,
@@ -81,8 +87,7 @@ public class AuthController {
         authService.changePassword(
             principal.getName(), 
             request.getOldPassword(), 
-            request.getNewPassword(), 
-            request.getVerificationCode()
+            request.getNewPassword()
         );
         return ResponseEntity.ok(new ApiResponse<>(200, "Password changed successfully", null));
     }

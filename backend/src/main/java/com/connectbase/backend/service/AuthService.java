@@ -28,6 +28,11 @@ public class AuthService {
 
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+    public User getUserProfile(String email) {
+        return userRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
     public User registerUser(String firstName, String lastName, String email,
                              String phone, String gender, String password, MultipartFile image) {
         if (userRepo.existsByEmail(email)) {
@@ -90,7 +95,7 @@ public class AuthService {
         userRepo.save(user);
     }
 
-    public void changePassword(String email, String oldPassword, String newPassword, String verificationCode) {
+    public void changePassword(String email, String oldPassword, String newPassword) {
         User user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -98,13 +103,7 @@ public class AuthService {
             throw new RuntimeException("Incorrect old password");
         }
 
-        if (user.getVerificationCode() == null || !user.getVerificationCode().equals(verificationCode) ||
-                user.getVerificationCodeExpiry().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Invalid or expired verification code");
-        }
-
         user.setPassword(passwordEncoder.encode(newPassword));
-        user.setVerificationCode(null);
         userRepo.save(user);
     }
 

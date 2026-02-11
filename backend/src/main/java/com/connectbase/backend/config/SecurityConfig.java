@@ -28,6 +28,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Keep disabled for REST API
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Important: No server sessions
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/me").authenticated() // Secured endpoint
+                        .requestMatchers("/auth/change-password").authenticated() // Secured endpoint
                         .requestMatchers("/auth/**").permitAll() // Login/Register/Forgot Pass must be public
                         .requestMatchers("/api/**").authenticated() //  SECURED: Only logged-in users
                         .anyRequest().authenticated()
