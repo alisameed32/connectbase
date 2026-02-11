@@ -236,20 +236,21 @@ const ContactsPage = () => {
         <div className="min-h-screen font-sans text-slate-900 bg-[#f5f8fa] relative overflow-x-hidden selection:bg-indigo-500/20">
             
             {/* Navbar - Modern Enterprise Style (User's Theme) */}
-            <nav className="fixed top-0 left-0 right-0 z-30 bg-[#1e1b4b] border-b border-[#1e1b4b] px-6 py-3 flex items-center justify-between shadow-sm transition-all">
+            <nav className="fixed top-0 left-0 right-0 z-30 bg-[#1e1b4b] border-b border-[#1e1b4b] px-4 sm:px-6 py-3 flex items-center justify-between shadow-sm transition-all">
                 <div className="flex items-center gap-2 font-bold text-xl tracking-tight text-white">
                     <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-900/20">
                         C
                     </div>
-                    ConnectBase
+                    <span className="hidden sm:inline">ConnectBase</span>
+                    <span className="sm:hidden">CB</span>
                 </div>
                 <div className="flex items-center gap-4">
                     <button 
                          onClick={handleLogout}
-                         className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-indigo-100/80 hover:text-white hover:bg-white/10 rounded-md transition-colors"
+                         className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-indigo-100/80 hover:text-white hover:bg-white/10 rounded-md transition-colors"
                     >
                         <LogOut className="w-4 h-4" />
-                        Logout
+                        <span className="hidden sm:inline">Logout</span>
                     </button>
                     <div 
                         onClick={() => navigate('/profile')}
@@ -458,8 +459,8 @@ const ContactsPage = () => {
                     </div>
                     
                     {/* Pagination */}
-                    <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
-                        <div className="text-sm text-gray-500">
+                    <div className="px-4 sm:px-6 py-4 bg-gray-50 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0">
+                        <div className="text-sm text-gray-500 text-center sm:text-left">
                             Showing <span className="font-medium">{contacts.length > 0 ? currentPage * 10 + 1 : 0}</span> to <span className="font-medium">{Math.min((currentPage + 1) * 10, totalElements)}</span> of <span className="font-medium">{totalElements}</span> results
                         </div>
                         <div className="flex gap-2">

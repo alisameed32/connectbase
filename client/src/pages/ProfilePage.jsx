@@ -88,26 +88,27 @@ const ProfilePage = () => {
     return (
         <div className="min-h-screen bg-gray-50/50 dark:bg-slate-950 transition-colors pb-12">
             {/* Navbar */}
-            <nav className="fixed top-0 left-0 right-0 z-30 bg-white/80 backdrop-blur-md border-b border-gray-100 px-6 py-3 flex items-center justify-between shadow-sm dark:bg-slate-900/80 dark:border-slate-800">
-               <div className="flex items-center gap-4">
+            <nav className="fixed top-0 left-0 right-0 z-30 bg-white/80 backdrop-blur-md border-b border-gray-100 px-4 sm:px-6 py-3 flex items-center justify-between shadow-sm dark:bg-slate-900/80 dark:border-slate-800">
+               <div className="flex items-center gap-3 sm:gap-4">
                     <button onClick={() => navigate('/contacts')} className="p-2 -ml-2 hover:bg-gray-100 rounded-full dark:hover:bg-slate-800 dark:text-white transition-colors">
                         <ArrowLeft className="w-5 h-5" />
                     </button>
-                    <h1 className="text-xl font-bold text-gray-900 dark:text-white">User Profile</h1>
+                    <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">User Profile</h1>
                </div>
                <button onClick={handleLogout} className="flex items-center gap-2 text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors dark:hover:bg-red-900/20">
-                   <LogOut className="w-4 h-4" /> Logout
+                   <LogOut className="w-4 h-4" /> 
+                   <span className="hidden sm:inline">Logout</span>
                </button>
             </nav>
 
             <main className="pt-24 px-4 max-w-2xl mx-auto">
                 {/* Profile Card */}
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden dark:bg-slate-900 dark:border-slate-800">
-                    <div className="h-32 bg-gradient-to-r from-violet-600 to-indigo-600 relative">
+                    <div className="h-28 sm:h-32 bg-gradient-to-r from-violet-600 to-indigo-600 relative">
                          <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
                     </div>
                     
-                    <div className="px-6 pb-6 relative">
+                    <div className="px-4 sm:px-6 pb-6 relative">
                         <div className="flex justify-between items-end -mt-12 mb-6">
                              <div className="w-24 h-24 rounded-full border-[4px] border-white bg-white shadow-md overflow-hidden dark:border-slate-900 dark:bg-slate-800">
                                  {user?.profilePic ? (

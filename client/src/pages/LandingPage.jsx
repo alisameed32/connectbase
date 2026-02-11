@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import LocomotiveScroll from 'locomotive-scroll';
 import { 
     ArrowRight, CheckCircle2, Zap, Shield, Globe, Users, 
-    BarChart3, Layout, ChevronDown, ChevronUp, Github, Twitter, Linkedin 
+    BarChart3, Layout, ChevronDown, ChevronUp, Github, Twitter, Linkedin, Menu, X 
 } from 'lucide-react';
 
 const LandingPage = () => {
     const navigate = useNavigate();
     const scrollRef = useRef(null);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     // Initialize Locomotive Scroll
     useEffect(() => {
@@ -36,15 +37,18 @@ const LandingPage = () => {
                         </div>
                         ConnectBase
                     </div>
+                    
+                    {/* Desktop Menu */}
                     <div className="hidden md:flex items-center gap-8 text-sm font-medium text-indigo-100/80">
                         <a href="#features" className="hover:text-white transition-colors">Features</a>
                         <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
                         <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
                     </div>
-                    <div className="flex items-center gap-4">
+                    
+                    <div className="hidden md:flex items-center gap-4">
                         <button 
                             onClick={() => navigate('/auth')}
-                            className="text-sm font-semibold text-white/90 hover:text-white transition-colors hidden sm:block"
+                            className="text-sm font-semibold text-white/90 hover:text-white transition-colors"
                         >
                             Log in
                         </button>
@@ -55,7 +59,46 @@ const LandingPage = () => {
                             Get Started
                         </button>
                     </div>
+
+                    {/* Mobile Menu Toggle */}
+                    <button 
+                        className="md:hidden p-2 text-white/90 hover:text-white"
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    >
+                        {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                    </button>
                 </div>
+
+                {/* Mobile Menu Overlay */}
+                <AnimatePresence>
+                    {isMobileMenuOpen && (
+                        <motion.div 
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="md:hidden bg-[#1e1b4b] border-b border-white/10 overflow-hidden"
+                        >
+                            <div className="px-6 py-6 space-y-4 flex flex-col">
+                                <a href="#features" onClick={() => setIsMobileMenuOpen(false)} className="text-indigo-100 hover:text-white font-medium py-2">Features</a>
+                                <a href="#pricing" onClick={() => setIsMobileMenuOpen(false)} className="text-indigo-100 hover:text-white font-medium py-2">Pricing</a>
+                                <a href="#faq" onClick={() => setIsMobileMenuOpen(false)} className="text-indigo-100 hover:text-white font-medium py-2">FAQ</a>
+                                <div className="h-px bg-white/10 my-2"></div>
+                                <button 
+                                    onClick={() => navigate('/auth')}
+                                    className="text-left text-white font-medium py-2"
+                                >
+                                    Log in
+                                </button>
+                                <button 
+                                    onClick={() => navigate('/auth')}
+                                    className="w-full py-3 bg-white text-indigo-900 font-bold rounded-xl shadow-lg mt-2"
+                                >
+                                    Get Started
+                                </button>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </nav>
 
             {/* Main Content */}
@@ -140,7 +183,9 @@ const LandingPage = () => {
                         <div className="absolute -bottom-12 -left-12 w-64 h-64 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
                         
                         {/* Main Dashboard Preview */}
-                        <div className="relative rounded-xl bg-white p-6 shadow-2xl overflow-hidden ring-1 ring-slate-900/5 text-left">
+                        <div className="relative rounded-xl bg-white shadow-2xl overflow-hidden ring-1 ring-slate-900/5 text-left">
+                           <div className="p-4 md:p-6 overflow-x-auto">
+                           <div className="min-w-[800px]">
                            {/* Header */}
                            <div className="flex justify-between items-center mb-8">
                                 <h3 className="text-2xl font-bold text-slate-800">Contacts</h3>
@@ -209,12 +254,14 @@ const LandingPage = () => {
                                 ))}
                            </div>
 
-                           <div className="px-4 py-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                           <div className="px-4 py-4 border-t border-slate-100 flex items-center justify-center sm:justify-between text-xs text-slate-500">
                                 Showing 1 to 4 of 4 results
-                                <div className="flex gap-1">
+                                <div className="flex gap-1 ml-auto sm:ml-0">
                                     <div className="w-8 h-8 border border-slate-200 rounded flex items-center justify-center hover:bg-slate-50">‹</div>
                                     <div className="w-8 h-8 border border-slate-200 rounded flex items-center justify-center hover:bg-slate-50">›</div>
                                 </div>
+                           </div>
+                           </div>
                            </div>
                         </div>
                     </motion.div>
