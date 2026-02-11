@@ -4,6 +4,7 @@ import AuthPage from './pages/AuthPage';
 import ContactsPage from './pages/ContactsPage';
 import ProfilePage from './pages/ProfilePage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import DeveloperBadge from './components/ui/DeveloperBadge';
 import './App.css';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <DeveloperBadge />
     </Router>
   );
 }
