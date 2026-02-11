@@ -233,11 +233,12 @@ const ContactsPage = () => {
 
 
     return (
-        <div className="min-h-screen bg-slate-50/50 font-sans text-gray-900 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-100/20 via-slate-50 to-slate-50">
-            {/* Navbar */}
-            <nav className="fixed top-0 left-0 right-0 z-30 bg-white/80 backdrop-blur-md border-b border-gray-100 px-6 py-3 flex items-center justify-between shadow-sm transition-all">
-                <div className="flex items-center gap-2 font-bold text-xl tracking-tight text-gray-900">
-                    <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-indigo-600 rounded-lg flex items-center justify-center text-white shadow-md shadow-indigo-200">
+        <div className="min-h-screen font-sans text-slate-900 bg-[#f5f8fa] relative overflow-x-hidden selection:bg-indigo-500/20">
+            
+            {/* Navbar - Modern Enterprise Style (User's Theme) */}
+            <nav className="fixed top-0 left-0 right-0 z-30 bg-[#1e1b4b] border-b border-[#1e1b4b] px-6 py-3 flex items-center justify-between shadow-sm transition-all">
+                <div className="flex items-center gap-2 font-bold text-xl tracking-tight text-white">
+                    <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-900/20">
                         C
                     </div>
                     ConnectBase
@@ -245,46 +246,46 @@ const ContactsPage = () => {
                 <div className="flex items-center gap-4">
                     <button 
                          onClick={handleLogout}
-                         className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                         className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-indigo-100/80 hover:text-white hover:bg-white/10 rounded-md transition-colors"
                     >
                         <LogOut className="w-4 h-4" />
                         Logout
                     </button>
                     <div 
                         onClick={() => navigate('/profile')}
-                        className="w-8 h-8 rounded-full bg-gray-200 border border-gray-300 cursor-pointer hover:ring-2 hover:ring-indigo-500 transition-all overflow-hidden relative"
+                        className="w-8 h-8 rounded-full bg-indigo-900 border border-indigo-700 cursor-pointer hover:ring-2 hover:ring-indigo-400 transition-all overflow-hidden relative"
                         title="View Profile"
                     >
                         {currentUser && currentUser.profilePic ? (
                             <img src={currentUser.profilePic} alt="Profile" className="w-full h-full object-cover" />
                         ) : (
-                            <User className="w-full h-full p-1 text-gray-500" />
+                            <User className="w-full h-full p-1 text-indigo-200" />
                         )}
                     </div>
                 </div>
             </nav>
 
             {/* Main Content */}
-            <main className="pt-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pb-12">
+            <main className="pt-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pb-12 relative z-10">
                 
                 {/* Header Actions */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Contacts</h1>
-                        <p className="text-sm text-gray-500 mt-1">Manage your team and network relationships.</p>
+                        <h1 className="text-3xl font-bold text-slate-800">Contacts</h1>
+                        {/* <p className="text-sm text-gray-500 mt-1">Manage your team and network relationships.</p>  Hubspot is often cleaner */}
                     </div>
                     
                     <button
                         onClick={() => setIsCreateOpen(true)}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white rounded-xl font-bold shadow-lg shadow-indigo-200 transition-all transform hover:-translate-y-0.5 active:scale-95"
+                        className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md font-semibold shadow-sm transition-all transform active:scale-95 border border-indigo-600"
                     >
                         <Plus className="w-4 h-4" />
-                        Add Contact
+                        Create contact
                     </button>
                 </div>
 
                 {/* Filters & Search */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div className="bg-white rounded border border-gray-200 p-3 mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 shadow-[0_1px_3px_0_rgba(0,0,0,0.1)]">
                     <div className="relative w-full sm:max-w-md">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                             <Search className="h-4 w-4" />
@@ -292,7 +293,7 @@ const ContactsPage = () => {
                         <input
                             type="text"
                             placeholder="Search contacts..."
-                            className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm shadow-sm"
+                            className="block w-full pl-9 pr-3 py-2 border border-gray-300 rounded leading-5 bg-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all text-sm"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -308,17 +309,17 @@ const ContactsPage = () => {
                         />
                         <button 
                             onClick={handleImportClick}
-                            className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm"
+                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-gray-300 rounded hover:bg-gray-50 hover:border-gray-400 transition-all shadow-sm"
                         >
-                             <Upload className="w-4 h-4 text-gray-500" />
+                             <Upload className="w-4 h-4 text-slate-500" />
                              Import
                         </button>
                         <button 
                             onClick={handleExport}
-                            className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm"
+                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-gray-300 rounded hover:bg-gray-50 hover:border-gray-400 transition-all shadow-sm"
                             title="Export Contacts"
                         >
-                             <FileDown className="w-4 h-4 text-gray-500" />
+                             <FileDown className="w-4 h-4 text-slate-500" />
                              Export
                         </button>
                     </div>
@@ -333,15 +334,16 @@ const ContactsPage = () => {
                 />
 
                 {/* Table */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="bg-white rounded border border-gray-200 overflow-hidden shadow-sm">
                     <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-100">
-                            <thead className="bg-gray-50/50">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
                                 <tr>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Name</th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Contact Info</th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Job Title</th>
-                                    <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
+                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-200">Name</th>
+                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-200">Email</th>
+                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-200">Phone Number</th>
+                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-200">Job Title</th>
+                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-200">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-100">
@@ -369,7 +371,7 @@ const ContactsPage = () => {
                                             whilehover={{ backgroundColor: "#fafafa" }}
                                             className="group transition-colors"
                                         >
-                                            <td className="px-6 py-4 whitespace-nowrap">
+                                            <td className="px-6 py-4 whitespace-nowrap border-b border-gray-100">
                                                 <div className="flex items-center">
                                                     <div 
                                                         className="flex-shrink-0 h-10 w-10 relative cursor-pointer group/avatar"
@@ -377,66 +379,72 @@ const ContactsPage = () => {
                                                         title="Change Photo"
                                                     >
                                                         {contact.image ? (
-                                                            <img className="h-10 w-10 rounded-full object-cover border border-gray-100 transition-opacity group-hover/avatar:opacity-75" src={contact.image} alt="" />
+                                                            <img className="h-10 w-10 rounded-full object-cover border border-gray-200 transition-opacity group-hover/avatar:opacity-75" src={contact.image} alt="" />
                                                         ) : (
-                                                            <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-sm transition-opacity group-hover/avatar:opacity-75">
+                                                            <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-sm transition-opacity group-hover/avatar:opacity-75">
                                                                 {contact.firstName.charAt(0)}{contact.lastName.charAt(0)}
                                                             </div>
                                                         )}
                                                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity">
-                                                            <Camera className="w-4 h-4 text-gray-600 drop-shadow-md" />
+                                                            <Camera className="w-4 h-4 text-slate-600 drop-shadow-md" />
                                                         </div>
                                                     </div>
                                                     <div className="ml-4">
-                                                        <div className="text-sm font-bold text-gray-900">{contact.firstName} {contact.lastName}</div>
+                                                        <div className="text-sm font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors">{contact.firstName} {contact.lastName}</div>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
+                                            <td className="px-6 py-4 whitespace-nowrap border-b border-gray-100">
                                                 <div className="flex items-center gap-2 group/copy">
-                                                    <div className="text-sm text-gray-900">{contact.email}</div>
+                                                    <div className="text-sm text-slate-700">{contact.email}</div>
                                                     <button 
                                                         onClick={() => handleCopy(contact.email, 'Email')}
-                                                        className="opacity-0 group-hover/copy:opacity-100 p-1 text-gray-400 hover:text-indigo-600 transition-all"
+                                                        className="opacity-0 group-hover/copy:opacity-100 p-1 text-slate-400 hover:text-indigo-600 transition-all"
                                                         title="Copy Email"
                                                     >
                                                         <Copy className="w-3 h-3" />
                                                     </button>
                                                 </div>
+                                            </td> 
+                                            <td className="px-6 py-4 whitespace-nowrap border-b border-gray-100">
                                                 <div className="flex items-center gap-2 group/copy mt-0.5">
-                                                    <div className="text-xs text-gray-500">{contact.phone}</div>
+                                                    <div className="text-sm text-slate-500">{contact.phone}</div>
                                                     <button 
                                                         onClick={() => handleCopy(contact.phone, 'Phone')}
-                                                        className="opacity-0 group-hover/copy:opacity-100 p-1 text-gray-400 hover:text-indigo-600 transition-all"
+                                                        className="opacity-0 group-hover/copy:opacity-100 p-1 text-slate-400 hover:text-indigo-600 transition-all"
                                                         title="Copy Phone"
                                                     >
                                                         <Copy className="w-3 h-3" />
                                                     </button>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-50 text-blue-700">
-                                                    {contact.title || 'N/A'}
-                                                </div>
+                                            <td className="px-6 py-4 whitespace-nowrap border-b border-gray-100">
+                                                {contact.title ? (
+                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100">
+                                                        {contact.title}
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-slate-400">-</span>
+                                                )}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                <div className="flex justify-end gap-2">
+                                            <td className="px-6 py-4 whitespace-nowrap text-left text-sm font-medium border-b border-gray-100">
+                                                <div className="flex gap-2">
                                                     <button 
                                                         onClick={() => { setSelectedContact(contact); setIsViewOpen(true); }}
-                                                        className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all hover:shadow-sm"
+                                                        className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-all"
                                                         title="View Details"
                                                     >
                                                         <Eye className="w-4 h-4" />
                                                     </button>
                                                     <button 
                                                         onClick={() => { setSelectedContact(contact); setIsEditOpen(true); }}
-                                                        className="p-2 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded-lg transition-all hover:shadow-sm"
+                                                        className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
                                                     >
                                                         <Edit2 className="w-4 h-4" />
                                                     </button>
                                                     <button 
                                                         onClick={() => { setSelectedContact(contact); setIsDeleteOpen(true); }}
-                                                        className="p-2 text-rose-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all hover:shadow-sm"
+                                                        className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded transition-all"
                                                     >
                                                         <Trash2 className="w-4 h-4" />
                                                     </button>
