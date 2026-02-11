@@ -30,7 +30,7 @@ const InputField = ({ label, name, type = "text", icon: Icon, placeholder, requi
   </div>
 );
 
-const SignupForm = ({ onToggle }) => {
+const SignupForm = ({ onToggle, showToast }) => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -80,7 +80,11 @@ const SignupForm = ({ onToggle }) => {
         }
       });
       console.log('Registration successful:', response.data);
-      alert('Account created! Please login.');
+      if (showToast) {
+         showToast('Account created successfully! Please login.', 'success');
+      } else {
+         alert('Account created! Please login.');
+      }
       onToggle(); 
     } catch (err) {
       console.error('Registration error:', err);

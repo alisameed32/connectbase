@@ -28,7 +28,7 @@ const InputField = ({ label, name, type = "text", icon: Icon, placeholder, requi
     </div>
   );
 
-const LoginForm = ({ onToggle }) => {
+const LoginForm = ({ onToggle, showToast, onForgotPassword }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -59,11 +59,16 @@ const LoginForm = ({ onToggle }) => {
       });
       
       console.log('Login successful:', response.data);
-      alert('Login Successful!'); 
+      if (showToast) {
+         showToast(`Welcome back, ${formData.email.split('@')[0]}!`, 'success');
+      } else {
+         alert('Login Successful!'); 
+      }
       // Redirect or update app state here
     } catch (err) {
       console.error('Login error:', err);
       setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      // Optional: showToast on error too if desired, but we have inline error
     } finally {
       setLoading(false);
     }
@@ -124,9 +129,13 @@ const LoginForm = ({ onToggle }) => {
           </div>
 
           <div className="text-xs">
-            <a href="#" className="font-semibold text-purple-600 hover:text-purple-500">
+            <button 
+                type="button"
+                onClick={onForgotPassword}
+                className="font-semibold text-purple-600 hover:text-purple-500"
+            >
               Forgot password?
-            </a>
+            </button>
           </div>
         </div>
 

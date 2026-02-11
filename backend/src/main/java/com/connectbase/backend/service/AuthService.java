@@ -4,8 +4,12 @@ import com.connectbase.backend.model.User;
 import com.connectbase.backend.repo.UserRepo;
 import com.connectbase.backend.security.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
+
+
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -56,16 +60,20 @@ public class AuthService {
         return user;
     }
 
+
     public void generateResetCode(String email) {
         User user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        String code = String.format("%06d", new Random().nextInt(999999));
+        int codeValue = new Random().nextInt(900000) + 100000;
+        String code = String.valueOf(codeValue);
+        
         user.setVerificationCode(code);
         user.setVerificationCodeExpiry(LocalDateTime.now().plusMinutes(15));
         userRepo.save(user);
 
-        sendEmail(email, "Password Reset Code", "Your code is: " + code);
+        // Send HTML Email
+        sendHtmlEmail(email, "ConnectBase: Reset Your Password", getResetPasswordEmailTemplate(user.getFirstName(), code));
     }
 
     public void resetPassword(String email, String code, String newPassword) {
@@ -100,11 +108,47 @@ public class AuthService {
         userRepo.save(user);
     }
 
-    private void sendEmail(String to, String subject, String body) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(body);
-        mailSender.send(message);
+    private void sendHtmlEmail(String to, String subject, String content) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom("ConnectBase Support <noreply@connectbase.com>");
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(content, true);
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Failed to send email", e);
+        }
+    }
+
+    private String getResetPasswordEmailTemplate(String firstName, String code) {
+        return "<!DOCTYPE html>" +
+                "<html>" +
+                "<body style=\"background-color: #f3f4f6; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;\">" +
+                "    <div style=\"max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);\">" +
+                "        <div style=\"background-color: #4f46e5; padding: 24px; text-align: center;\">" +
+                "            <h1 style=\"color: #ffffff; margin: 0; font-size: 24px;\">ConnectBase</h1>" +
+                "        </div>" +
+                "        <div style=\"padding: 32px; text-align: center;\">" +
+                "            <h2 style=\"color: #111827; font-size: 20px; font-weight: 600; margin-bottom: 16px;\">Password Reset</h2>" +
+                "            <p style=\"color: #4b5563; font-size: 16px; margin-bottom: 24px;\">" +
+                "                Hi " + firstName + ", use the code below to reset your password. It expires in 15 minutes." +
+                "            </p>" +
+                "            <div style=\"background-color: #f3f4f6; border-radius: 8px; padding: 16px; display: inline-block; margin-bottom: 24px;\">" +
+                "                <span style=\"font-size: 32px; font-weight: 700; letter-spacing: 4px; color: #4f46e5;\">" + code + "</span>" +
+                "            </div>" +
+                "            <p style=\"color: #6b7280; font-size: 14px;\">" +
+                "                If you didn't request this, you can safely ignore this email." +
+                "            </p>" +
+                "        </div>" +
+                "        <div style=\"background-color: #f9fafb; padding: 16px; text-align: center; border-top: 1px solid #e5e7eb;\">" +
+                "            <p style=\"color: #9ca3af; font-size: 12px; margin: 0;\">" +
+                "                © " + LocalDateTime.now().getYear() + " ConnectBase Inc." +
+                "            </p>" +
+                "        </div>" +
+                "    </div>" +
+                "</body>" +
+                "</html>";
     }
 }
