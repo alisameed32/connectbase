@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.net.URI;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api")
 public class ContactController {
 

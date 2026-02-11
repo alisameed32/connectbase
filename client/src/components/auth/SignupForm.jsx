@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../../api/axios';
 import { motion } from 'framer-motion';
 import { User, Mail, Phone, Lock, Upload, Loader2, ArrowLeft, CheckCircle2 } from 'lucide-react';
-
-const api = axios.create({
-  baseURL: 'http://localhost:8080/auth',
-  withCredentials: true
-});
 
 
 // Reusable Input Component outside main component to prevent re-renders losing focus
@@ -74,7 +69,7 @@ const SignupForm = ({ onToggle, showToast }) => {
         data.append('image', formData.image);
       }
 
-      const response = await api.post('/register', data, {
+      const response = await api.post('/auth/register', data, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }

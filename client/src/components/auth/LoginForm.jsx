@@ -1,12 +1,9 @@
+
 import React, { useState } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import api from '../../api/axios';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Loader2 } from 'lucide-react';
-
-const api = axios.create({
-  baseURL: 'http://localhost:8080/auth', // Adjust base URL as needed
-  withCredentials: true // Important for cookies
-});
 
 const InputField = ({ label, name, type = "text", icon: Icon, placeholder, required = true, value, onChange }) => (
     <div className="space-y-1">
@@ -29,6 +26,7 @@ const InputField = ({ label, name, type = "text", icon: Icon, placeholder, requi
   );
 
 const LoginForm = ({ onToggle, showToast, onForgotPassword }) => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -52,7 +50,7 @@ const LoginForm = ({ onToggle, showToast, onForgotPassword }) => {
       params.append('email', formData.email);
       params.append('password', formData.password);
 
-      const response = await api.post('/login', params, {
+      const response = await api.post('/auth/login', params, {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
@@ -64,7 +62,7 @@ const LoginForm = ({ onToggle, showToast, onForgotPassword }) => {
       } else {
          alert('Login Successful!'); 
       }
-      // Redirect or update app state here
+      navigate('/contacts');
     } catch (err) {
       console.error('Login error:', err);
       setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
