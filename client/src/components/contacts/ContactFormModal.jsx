@@ -146,7 +146,8 @@ const ContactFormModal = ({ isOpen, onClose, onSubmit, onImageUpdate, initialDat
                     </div>
 
                     <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                        {/* Image Upload - Centered */}
+                        {/* Image Upload - Only show in create mode */}
+                        {!initialData && (
                         <div className="flex flex-col items-center -mt-12 mb-4 relative z-20">
                             <div className="relative group cursor-pointer">
                                 <div className={`relative w-24 h-24 rounded-full overflow-hidden border-4 ${preview ? 'border-purple-500' : 'border-gray-100'} shadow-md transition-all`}>
@@ -175,9 +176,10 @@ const ContactFormModal = ({ isOpen, onClose, onSubmit, onImageUpdate, initialDat
                                 </label>
                             </div>
                             <span className="text-xs text-gray-400 mt-2 font-medium">
-                                {initialData ? 'Update Photo' : 'Upload Photo'}
+                                Upload Photo
                             </span>
                         </div>
+                        )}
 
                         {/* Name Fields */}
                         <div className="grid grid-cols-2 gap-4">

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Search, Trash2, Edit2, ChevronLeft, ChevronRight, MoreVertical, LogOut, FileDown, Upload, Eye, User } from 'lucide-react';
+import { Plus, Search, Trash2, Edit2, ChevronLeft, ChevronRight, MoreVertical, LogOut, FileDown, Upload, Eye, User, Copy, Camera } from 'lucide-react';
 import ContactFormModal from '../components/contacts/ContactFormModal';
 import DeleteContactModal from '../components/contacts/DeleteContactModal';
 import ViewContactModal from '../components/contacts/ViewContactModal';
@@ -25,6 +25,7 @@ const ContactsPage = () => {
     const [selectedContact, setSelectedContact] = useState(null);
     const [toast, setToast] = useState({ message: '', type: 'success' });
     const fileInputRef = React.useRef(null);
+    const profileImageInputRef = React.useRef(null);
     const [currentUser, setCurrentUser] = useState(null);
 
     // Initial load
@@ -120,18 +121,39 @@ const ContactsPage = () => {
         }
     };
 
-    const handleImageUpdate = async (formData) => {
-        if (!selectedContact) return;
+    const handleImageUpdate = async (formData, specificContactId = null) => {
+        const id = specificContactId || (selectedContact ? selectedContact.id : null);
+        if (!id) return;
+        
         try {
-             await api.put(`/api/update-contact/${selectedContact.id}`, formData, {
+             await api.put(`/api/update-contact/${id}`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             showToast('Profile photo updated', 'success');
             fetchContacts(currentPage, searchQuery);
+            setSelectedContact(null); // Clear selection if done via list
         } catch (error) {
             console.error(error);
             showToast('Failed to update photo', 'error');
         }
+    };
+
+    const handleAvatarClick = (contact) => {
+        setSelectedContact(contact); // Set state, but we'll also pass ID directly just in case
+        if (profileImageInputRef.current) {
+            profileImageInputRef.current.click();
+        }
+    };
+    
+    const handleProfileImageChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file || !selectedContact) return;
+        
+        const formData = new FormData();
+        formData.append('image', file);
+        
+        await handleImageUpdate(formData, selectedContact.id);
+        e.target.value = ''; // Reset input
     };
 
     const handleDelete = async () => {
@@ -189,7 +211,13 @@ const ContactsPage = () => {
             event.target.value = '';
         }
     };
-    
+
+    const handleCopy = (text, label) => {
+        if (!text) return;
+        navigator.clipboard.writeText(text);
+        showToast(`${label} copied to clipboard`, 'success');
+    };
+
     const handleLogout = async () => {
         try {
             await api.post('/auth/logout');
@@ -296,6 +324,14 @@ const ContactsPage = () => {
                     </div>
                 </div>
 
+                <input 
+                    type="file" 
+                    ref={profileImageInputRef} 
+                    onChange={handleProfileImageChange} 
+                    accept="image/*" 
+                    className="hidden" 
+                />
+
                 {/* Table */}
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <div className="overflow-x-auto">
@@ -335,14 +371,21 @@ const ContactsPage = () => {
                                         >
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex items-center">
-                                                    <div className="flex-shrink-0 h-10 w-10">
+                                                    <div 
+                                                        className="flex-shrink-0 h-10 w-10 relative cursor-pointer group/avatar"
+                                                        onClick={() => handleAvatarClick(contact)}
+                                                        title="Change Photo"
+                                                    >
                                                         {contact.image ? (
-                                                            <img className="h-10 w-10 rounded-full object-cover border border-gray-100" src={contact.image} alt="" />
+                                                            <img className="h-10 w-10 rounded-full object-cover border border-gray-100 transition-opacity group-hover/avatar:opacity-75" src={contact.image} alt="" />
                                                         ) : (
-                                                            <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-sm">
+                                                            <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-sm transition-opacity group-hover/avatar:opacity-75">
                                                                 {contact.firstName.charAt(0)}{contact.lastName.charAt(0)}
                                                             </div>
                                                         )}
+                                                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity">
+                                                            <Camera className="w-4 h-4 text-gray-600 drop-shadow-md" />
+                                                        </div>
                                                     </div>
                                                     <div className="ml-4">
                                                         <div className="text-sm font-bold text-gray-900">{contact.firstName} {contact.lastName}</div>
@@ -350,8 +393,26 @@ const ContactsPage = () => {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm text-gray-900">{contact.email}</div>
-                                                <div className="text-xs text-gray-500">{contact.phone}</div>
+                                                <div className="flex items-center gap-2 group/copy">
+                                                    <div className="text-sm text-gray-900">{contact.email}</div>
+                                                    <button 
+                                                        onClick={() => handleCopy(contact.email, 'Email')}
+                                                        className="opacity-0 group-hover/copy:opacity-100 p-1 text-gray-400 hover:text-indigo-600 transition-all"
+                                                        title="Copy Email"
+                                                    >
+                                                        <Copy className="w-3 h-3" />
+                                                    </button>
+                                                </div>
+                                                <div className="flex items-center gap-2 group/copy mt-0.5">
+                                                    <div className="text-xs text-gray-500">{contact.phone}</div>
+                                                    <button 
+                                                        onClick={() => handleCopy(contact.phone, 'Phone')}
+                                                        className="opacity-0 group-hover/copy:opacity-100 p-1 text-gray-400 hover:text-indigo-600 transition-all"
+                                                        title="Copy Phone"
+                                                    >
+                                                        <Copy className="w-3 h-3" />
+                                                    </button>
+                                                </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-50 text-blue-700">
