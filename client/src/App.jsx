@@ -3,6 +3,7 @@ import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
 import ContactsPage from './pages/ContactsPage';
 import ProfilePage from './pages/ProfilePage';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 import './App.css';
 
 function App() {
@@ -11,8 +12,13 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/auth" element={<AuthPage />} />
-        <Route path="/contacts" element={<ContactsPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
+        
+        {/* Protected Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/contacts" element={<ContactsPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+        </Route>
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

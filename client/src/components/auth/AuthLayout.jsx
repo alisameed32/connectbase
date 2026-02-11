@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Globe, CheckCircle2 } from 'lucide-react';
+import { Globe, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 // import LocomotiveScroll from 'locomotive-scroll'; // Disabled to fix scroll conflict
 
 const AuthLayout = ({ children, title, subtitle }) => {
@@ -12,7 +13,14 @@ const AuthLayout = ({ children, title, subtitle }) => {
   // }, []);
 
   return (
-    <div className="flex min-h-screen bg-gray-50 overflow-hidden">
+    <div className="flex min-h-screen bg-gray-50 overflow-hidden relative">
+      <Link 
+        to="/" 
+        className="absolute top-6 left-6 z-50 flex items-center gap-2 text-sm font-medium transition-colors text-gray-600 hover:text-gray-900 lg:text-white/80 lg:hover:text-white"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        <span>Back to Website</span>
+      </Link>
       {/* Left Side - Hero/Branding */}
       <motion.div 
         initial={{ x: -100, opacity: 0 }}

@@ -28,29 +28,29 @@ const LandingPage = () => {
     return (
         <div className="font-sans text-slate-900 bg-linear-to-br from-slate-50 via-white to-indigo-50/30 overflow-x-hidden selection:bg-indigo-500 selection:text-white">
             {/* Navbar - Fixed outside scroll context */}
-            <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-indigo-50/50 transition-all duration-300">
+            <nav className="fixed top-0 left-0 right-0 z-50 bg-linear-to-r from-[#1e1b4b] via-indigo-950 to-[#1e1b4b] border-b border-white/10 shadow-lg shadow-indigo-900/20 transition-all duration-300 backdrop-blur-md">
                 <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-                    <div className="flex items-center gap-2 font-bold text-xl tracking-tight text-slate-900 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-                        <div className="w-8 h-8 bg-linear-to-br from-violet-600 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/20">
+                    <div className="flex items-center gap-2 font-bold text-xl tracking-tight text-white cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                        <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-white font-bold ring-1 ring-white/20">
                             C
                         </div>
                         ConnectBase
                     </div>
-                    <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
-                        <a href="#features" className="hover:text-indigo-600 transition-colors">Features</a>
-                        <a href="#pricing" className="hover:text-indigo-600 transition-colors">Pricing</a>
-                        <a href="#faq" className="hover:text-indigo-600 transition-colors">FAQ</a>
+                    <div className="hidden md:flex items-center gap-8 text-sm font-medium text-indigo-100/80">
+                        <a href="#features" className="hover:text-white transition-colors">Features</a>
+                        <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
+                        <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
                     </div>
                     <div className="flex items-center gap-4">
                         <button 
                             onClick={() => navigate('/auth')}
-                            className="text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-colors hidden sm:block"
+                            className="text-sm font-semibold text-white/90 hover:text-white transition-colors hidden sm:block"
                         >
                             Log in
                         </button>
                         <button 
                             onClick={() => navigate('/auth')}
-                            className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-full shadow-lg shadow-indigo-500/20 transition-all hover:-translate-y-0.5"
+                            className="px-5 py-2.5 bg-white text-indigo-900 text-sm font-bold rounded-full shadow-lg shadow-white/10 transition-all hover:-translate-y-0.5 hover:bg-indigo-50"
                         >
                             Get Started
                         </button>

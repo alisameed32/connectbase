@@ -57,6 +57,10 @@ const LoginForm = ({ onToggle, showToast, onForgotPassword }) => {
       });
       
       console.log('Login successful:', response.data);
+      
+      // Set UI authentication flag (actual auth is handled by HttpOnly cookies)
+      localStorage.setItem('isAuthenticated', 'true');
+
       if (showToast) {
          showToast(`Welcome back, ${formData.email.split('@')[0]}!`, 'success');
       } else {
