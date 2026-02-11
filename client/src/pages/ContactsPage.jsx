@@ -25,8 +25,23 @@ const ContactsPage = () => {
     const [selectedContact, setSelectedContact] = useState(null);
     const [toast, setToast] = useState({ message: '', type: 'success' });
     const fileInputRef = React.useRef(null);
+    const [currentUser, setCurrentUser] = useState(null);
 
-    // Fetch Contacts
+    // Initial load
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const response = await api.get('/auth/me');
+                if (response.data && response.data.data) {
+                    setCurrentUser(response.data.data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch user profile", error);
+            }
+        };
+        fetchUser();
+        fetchContacts(currentPage, searchQuery);
+    }, [currentPage]);
     const fetchContacts = async (page = 0, query = '') => {
         setLoading(true);
         try {
@@ -212,7 +227,11 @@ const ContactsPage = () => {
                         className="w-8 h-8 rounded-full bg-gray-200 border border-gray-300 cursor-pointer hover:ring-2 hover:ring-indigo-500 transition-all overflow-hidden relative"
                         title="View Profile"
                     >
-                        <User className="w-full h-full p-1 text-gray-500" />
+                        {currentUser && currentUser.profilePic ? (
+                            <img src={currentUser.profilePic} alt="Profile" className="w-full h-full object-cover" />
+                        ) : (
+                            <User className="w-full h-full p-1 text-gray-500" />
+                        )}
                     </div>
                 </div>
             </nav>
